@@ -630,64 +630,14 @@ panel_base_window_set_background_image_css (PanelBaseWindow *window) {
 
 static void
 panel_base_window_set_background_css (PanelBaseWindow *window, gchar *css_string) {
-  GtkStyleContext        *context;
-
-  context = gtk_widget_get_style_context (GTK_WIDGET (window));
-  /* Reset the css style provider */
-  gtk_style_context_remove_provider (context, GTK_STYLE_PROVIDER (window->priv->css_provider));
-  gtk_css_provider_load_from_data (window->priv->css_provider, css_string, -1, NULL);
-  gtk_style_context_add_provider (context,
-                                  GTK_STYLE_PROVIDER (window->priv->css_provider),
-                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  g_free (css_string);
+// ROZNIAK: Remove CSS crap
 }
 
 
 
 void
 panel_base_window_reset_background_css (PanelBaseWindow *window) {
-  PanelBaseWindowPrivate  *priv = window->priv;
-  GtkStyleContext         *context;
-  GdkRGBA                 *background_rgba;
-  gchar                   *border_side = NULL;
-  gchar                   *base_css;
-  gchar                   *color_text;
-
-  context = gtk_widget_get_style_context (GTK_WIDGET (window));
-  gtk_style_context_remove_provider (context,
-                                     GTK_STYLE_PROVIDER (window->priv->css_provider));
-  /* Get the background color of the panel to draw the border */
-  gtk_style_context_get (context, GTK_STATE_FLAG_NORMAL,
-                         GTK_STYLE_PROPERTY_BACKGROUND_COLOR,
-                         &background_rgba, NULL);
-
-  /* Set correct border style depending on panel position and length */
-  if (window->background_style == PANEL_BG_STYLE_NONE)
-    {
-      border_side = g_strdup_printf ("%s %s %s %s",
-                                     PANEL_HAS_FLAG (priv->borders, PANEL_BORDER_TOP) ? "solid" : "none",
-                                     PANEL_HAS_FLAG (priv->borders, PANEL_BORDER_RIGHT) ? "solid" : "none",
-                                     PANEL_HAS_FLAG (priv->borders, PANEL_BORDER_BOTTOM) ? "solid" : "none",
-                                     PANEL_HAS_FLAG (priv->borders, PANEL_BORDER_LEFT) ? "solid" : "none");
-    }
-
-  if (border_side)
-    {
-      color_text = gdk_rgba_to_string (background_rgba);
-      base_css = g_strdup_printf ("%s .xfce4-panel.background { border-style: %s; border-width: 1px; border-color: shade(%s, 0.7); }",
-                                  PANEL_BASE_CSS, border_side, color_text);
-      gtk_css_provider_load_from_data (window->priv->css_provider, base_css, -1, NULL);
-      g_free (base_css);
-      g_free (color_text);
-      g_free (border_side);
-    }
-  else
-    gtk_css_provider_load_from_data (window->priv->css_provider, PANEL_BASE_CSS, -1, NULL);
-
-  gtk_style_context_add_provider (context,
-                                  GTK_STYLE_PROVIDER (window->priv->css_provider),
-                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  gdk_rgba_free (background_rgba);
+// ROZNIAK: Remove CSS crap
 }
 
 
@@ -826,14 +776,9 @@ panel_base_window_set_borders (PanelBaseWindow *window,
 
   panel_return_if_fail (PANEL_IS_BASE_WINDOW (window));
 
-  if (priv->borders != borders)
-    {
-      priv->borders = borders;
-      gtk_widget_queue_resize (GTK_WIDGET (window));
-      /* Re-draw the borders if system colors are being used */
-      if (window->background_style == PANEL_BG_STYLE_NONE)
-        panel_base_window_reset_background_css (window);
-    }
+  // ROZNIAK: Trying to get rid of this stupid border
+  //
+  priv->borders = PANEL_BORDER_NONE;
 }
 
 
@@ -850,5 +795,7 @@ panel_base_window_get_borders (PanelBaseWindow *window)
     return PANEL_BORDER_TOP | PANEL_BORDER_BOTTOM
            | PANEL_BORDER_LEFT | PANEL_BORDER_RIGHT;
 
-  return priv->borders;
+  // ROZNIAK: Trying to get rid of this stupid border
+  //
+  return PANEL_BORDER_NONE;
 }
